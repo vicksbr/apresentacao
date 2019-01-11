@@ -62,3 +62,4 @@ db.sqlite3
 instance/
 .webassets-cache
 
+vscode/
