@@ -11,7 +11,7 @@ name = __name__
 @app.route("/")
 def index():
     print(app.debug)
-    print(f'print na rota com debug={app.debug}')
+    print(f'print na rota com debug={app.debug} e __name__={__name__}')
     return "Hello World!"
 
 

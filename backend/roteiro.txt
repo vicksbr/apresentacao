@@ -1,0 +1,217 @@
+Explicar o que é WSGI e quais problemas ele resolve:
+
+Oque é:
+
+O Web Server Gateway Interface (WSGI), em português Interface de Porta de Entrada do Servidor Web, 
+é uma especificação para uma interface simples e universal entre servidores web e aplicações web ou frameworks para a linguagem de programação Python. 
+Foi originalmente especificada na PEP 333, de autoria de Philip J. Eby, e publicada em 7 de dezembro de 2003.[1] 
+Desde então foi adotada como um padrão para o desenvolvimento de aplicações web em Python. 
+A última versão da especificação é v1.0.1, também conhecida como PEP 3333, publicada em 26 de setembro de 2010.[2]
+
+buzzword: PEP 0 -- Index of Python Enhancement Proposals (PEPs)
+
+Flask is a microframework for Python based on Werkzeug, Jinja 2 and good intentions. And before you ask: It's BSD licensed!
+
+“Micro” does not mean that your whole web application has to fit into a single Python file (although it certainly can), nor does it mean
+ that Flask is lacking in functionality. 
+ The “micro” in microframework means Flask aims to keep the core simple but extensible. 
+ Flask won’t make many decisions for you, such as what database to use. Those decisions that it does make, such as what templating engine to use, 
+ are easy to change. Everything else is up to you, so that Flask can be everything you need and nothing you don’t.
+
+By default, Flask does not include a database abstraction layer, form validation or anything else where different libraries already exist that can handle that. 
+Instead, Flask supports extensions to add such functionality to your application as if it was implemented in Flask itself. 
+Numerous extensions provide database integration, form validation, upload handling, various open authentication technologies, and more. 
+Flask may be “micro”, but it’s ready for production use on a variety of needs.
+
+Setar um ambiente para o desenvolvimento:
+
+Instalação do virtuaenv e quais problemas ele resolve
+
+Instalação do flask
+
+pip install flask
+
+Hello world hello.py
+
+from flask import Flask
+app = Flask(__name__)
+
+debug = __name__ == '__main__'
+
+@app.route("/")
+def hello():
+    print(Ola mundo!!')
+    return "Hello World!"
+
+Rodar o python app.py e explicar o porque não roda nada
+
+FLASK_APP=hello.py flask run (porque setar FLASK_APP)
+
+Porque precisamos setar a variavel de ambiente para o flask
+funcionar
+
+o flask instala um script chamado flask no seu virualenv.
+Executado do terminal esse script da acesso a extensões built-in
+e a alguns comandos. --help :D
+
+Como a aplicação é descoberta:
+
+o script flask é instalado pelo Flask, e não pela sua aplicação.
+Então é necessário ensinar o caminho pra sua aplicação poder
+usa-lo. É por isso então que a variavel FLASK_APP tem que ser 
+setada para saber como carregar a sua aplicação.
+
+Explicar o __name__
+Explicar o FLASK_APP=hello.py flask run (porque setar FLASK_APP)
+
+Então, o que esse código faz?
+
+Primeiro importamos a classe Flask. Uma instância dessa classe será a nossa aplicação
+WSGI
+
+So what did that code do?
+
+First we imported the Flask class. An instance of this class will be our WSGI application.
+Next we create an instance of this class. The first argument is the name of the application’s module or package. 
+If you are using a single module (as in this example), you should use __name__ because depending on if 
+it’s started as application or imported as module the name will be different ('__main__' versus the actual import name). 
+This is needed so that Flask knows where to look for templates, static files, and so on. 
+For more information have a look at the Flask documentation.
+We then use the route() decorator to tell Flask what URL should trigger our function.
+The function is given a name which is also used to generate URLs for that particular function, and returns the message we want to display in the user’s browser.
+Just save it as hello.py or something similar. Make sure to not call your application flask.py because this would conflict with Flask itself.
+
+python -m (-m é module name)
+
+buzzword url:
+URL é o endereço de um recurso disponível em uma rede, seja a rede internet ou intranet, 
+e significa em inglês Uniform Resource Locator, e em português é conhecido por Localizador Padrão de Recursos.
+
+To run the application you can either use the flask command or python’s -m switch with Flask.
+ Before you can do that you need to tell your terminal the application to work with by exporting the FLASK_APP environment variable:
+
+$ export FLASK_APP=hello.py
+$ flask run
+ * Running on http://127.0.0.1:5000/
+
+Ou você pode colocar uma Main!
+
+----------------------------------------------------------------------------------------------------------------
+
+from flask import Flask
+
+app = Flask(__name__)
+
+debug = __name__ == '__main__'
+
+
+@app.route("/")
+def index():
+    print('print na rota')
+    return "Hello World!"
+
+
+@app.route("/minharota")
+def minharota():
+    print('print na rota minharota')
+    return "Hello World minharota!"
+
+
+if __name__ == '__main__':
+    print('print no debug')
+    app.run(debug=debug)
+
+----------------------------------------------------------------------------------------------------------------
+
+Foreword for Experienced Programmers
+Thread-Locals in Flask
+One of the design decisions in Flask was that simple tasks should be simple; they should not take a lot of code and yet they should not limit you. Because of that, Flask has a few design choices that some people might find surprising or unorthodox. For example, Flask uses thread-local objects internally so that you don’t have to pass objects around from function to function within a request in order to stay threadsafe. This approach is convenient, but requires a valid request context for dependency injection or when attempting to reuse code which uses a value pegged to the request. The Flask project is honest about thread-locals, does not hide them, and calls out in the code and documentation where they are used.
+
+Develop for the Web with Caution
+Always keep security in mind when building web applications.
+
+If you write a web application, you are probably allowing users to register and leave their data on your server. The users are entrusting you with data. And even if you are the only user that might leave data in your application, you still want that data to be stored securely.
+
+Unfortunately, there are many ways the security of a web application can be compromised. Flask protects you against one of the most common security problems of modern web applications: cross-site scripting (XSS). Unless you deliberately mark insecure HTML as secure, Flask and the underlying Jinja2 template engine have you covered. But there are many more ways to cause security problems.
+
+The documentation will warn you about aspects of web development that require attention to security. Some of these security concerns are far more complex than one might think, and we all sometimes underestimate the likelihood that a vulnerability will be exploited - until a clever attacker figures out a way to exploit our applications. And don’t think that your application is not important enough to attract an attacker. Depending on the kind of attack, chances are that automated bots are probing for ways to fill your database with spam, links to malicious software, and the like.
+
+Flask is no different from any other framework in that you the developer must build with caution, watching for exploits when building to your requirements.
+
+
+----------------
+
+Configuration and Conventions
+Flask has many configuration values, with sensible defaults, and a few conventions when getting started. 
+By convention, templates and static files are stored in subdirectories within the application’s Python source tree, 
+with the names templates and static respectively. 
+While this can be changed, you usually don’t have to, especially when getting started.
+
+
+Explicar porque o flask não deve ser usado para deploy:
+
+
+http://flask.pocoo.org/docs/0.12/deploying/
+
+Software deployment is all of the activities that make a software system available for use.[1]
+
+The general deployment process consists of several interrelated activities with possible transitions between them.
+ These activities can occur at the producer side or at the consumer side or both. Because every software system is unique, 
+ the precise processes or procedures within each activity can hardly be defined. Therefore, "deployment" should be interpreted as a general 
+ process that has to be customized according to specific requirements or characteristics.
+
+
+StandAlone Container (exemplo GUnicorn)
+
+São chamados stand alone , ou stand-alone (literalmente "ficam em pé por si só") os programas completamente autossuficientes: para seu funcionamento 
+não necessitam de um software auxiliar, como um interpretador, sob o qual terão de ser executados.
+
+Por exemplo, um programa Java é tipicamente compilado para bytecode e necessita de uma Java Virtual Machine para ser executado. 
+Também este é o caso de um programa Perl, que vai depender de um interpretador.
+
+Já um programa escrito em C ou C++, depois de compilado e tornado executável, poderia ser chamado standalone, 
+uma vez que precisaria apenas de bibliotecas. As quais, inclusive poderiam ser anexadas fisicamente a ele, através de ligação estática.
+
+Gunicorn ‘Green Unicorn’ is a WSGI HTTP Server for UNIX. It’s a pre-fork worker model ported from Ruby’s Unicorn project. It supports both eventlet and greenlet. Running a Flask application on this server is quite simple:
+
+gunicorn myproject:app
+Gunicorn provides many command-line options – see gunicorn -h. For example, to run a Flask application with 4 worker processes (-w 4) binding to localhost port 4000 (-b 127.0.0.1:4000):
+
+gunicorn -w 4 -b 127.0.0.1:5000 myproject:app
+
+Mostrar a documentação da API do Flask http://flask.pocoo.org/docs/1.0/api
+
+default_config = {'APPLICATION_ROOT': '/', 'DEBUG': None, 'ENV': None, 'EXPLAIN_TEMPLATE_LOADING': False, 'JSONIFY_MIMETYPE': 'application/json', 'JSONIFY_PRETTYPRINT_REGULAR': False, 'JSON_AS_ASCII': True, 'JSON_SORT_KEYS': True, 'MAX_CONTENT_LENGTH': None, 'MAX_COOKIE_SIZE': 4093, 'PERMANENT_SESSION_LIFETIME': datetime.timedelta(31), 'PREFERRED_URL_SCHEME': 'http', 'PRESERVE_CONTEXT_ON_EXCEPTION': None, 'PROPAGATE_EXCEPTIONS': None, 'SECRET_KEY': None, 'SEND_FILE_MAX_AGE_DEFAULT': datetime.timedelta(0, 43200), 'SERVER_NAME': None, 'SESSION_COOKIE_DOMAIN': None, 'SESSION_COOKIE_HTTPONLY': True, 'SESSION_COOKIE_NAME': 'session', 'SESSION_COOKIE_PATH': None, 'SESSION_COOKIE_SAMESITE': None, 'SESSION_COOKIE_SECURE': False, 'SESSION_REFRESH_EACH_REQUEST': True, 'TEMPLATES_AUTO_RELOAD': None, 'TESTING': False, 'TRAP_BAD_REQUEST_ERRORS': None, 'TRAP_HTTP_EXCEPTIONS': False, 'USE_X_SENDFILE': False}
+Default configuration parameters.
+
+----------------------------------------------------------------------------------------------------------------
+run(host=None, port=None, debug=None, load_dotenv=True, **options)
+Runs the application on a local development server.
+
+Do not use run() in a production setting. It is not intended to meet security and performance requirements for a production server. Instead, see Deployment Options for WSGI server recommendations.
+
+If the debug flag is set the server will automatically reload for code changes and show a debugger in case an exception happened.
+
+If you want to run the application in debug mode, but disable the code execution on the interactive debugger, you can pass use_evalex=False as parameter. This will keep the debugger’s traceback screen active, but disable code execution.
+
+It is not recommended to use this function for development with automatic reloading as this is badly supported. Instead you should be using the flask command line script’s run support.
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+debug
+Whether debug mode is enabled. When using flask run to start the development server, 
+an interactive debugger will be shown for unhandled exceptions, and the server will be reloaded when code changes. 
+This maps to the DEBUG config key. This is enabled when env is 'development' and is overridden by the FLASK_DEBUG environment variable. 
+It may not behave as expected if set in code.
+
+Do not enable debug mode when deploying in production.
+
+Default: True if env is 'development', or False otherwise.
+----------------------------------------------------------------------------------------------------------------
+
+config = None
+The configuration dictionary as Config. This behaves exactly like a regular dictionary but supports additional methods to load a config from files.
+
+
+blueprints = None
+all the attached blueprints in a dictionary by name. Blueprints can be attached multiple times so this dictionary does not tell you how 
+often they got attached.
